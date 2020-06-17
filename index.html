@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script type="module">
+			import DataStore from './index.js';
+
+			let callback1 = () => {
+				console.log('event!');
+			};
+			let callback2 = (arg1, arg2) => {
+				console.log('event!', arg1, arg2);
+			};
+			let handler = (...args) => {
+				args = args.map(arg => arg + 1);
+				return args;
+			};
+
+			let setup = async () => {
+				let dataStore = new DataStore();
+        console.log(dataStore);
+        await dataStore.init();
+        dataStore.load();
+				dataStore.subscribe('name', callback1);
+				dataStore.set('name', 'nico');
+        console.log(await dataStore.get('name'));
+				console.log(dataStore);
+        dataStore.save();
+			};
+
+      setup();
+		</script>
+	</body>
+</html>
