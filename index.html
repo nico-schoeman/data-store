@@ -14,7 +14,7 @@
 				console.log('event!');
 			};
 			let callback2 = (arg1, arg2) => {
-				console.log('event!', arg1, arg2);
+				console.log('event!2', arg1, arg2);
 			};
 			let handler = (...args) => {
 				args = args.map(arg => arg + 1);
@@ -26,9 +26,11 @@
         console.log(dataStore);
         await dataStore.init();
         dataStore.load();
-				dataStore.subscribe('name', callback1);
+				let unsub = dataStore.subscribe(callback1, 'name');
+        let unsub2 = dataStore.subscribe(callback1);
+        console.log(unsub, unsub2)
 				dataStore.set('name', 'nico');
-        console.log(await dataStore.get('name'));
+        console.log(dataStore.get('name'));
 				console.log(dataStore);
         dataStore.save();
 			};

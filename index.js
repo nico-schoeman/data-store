@@ -41,10 +41,14 @@ DataStore.prototype.init = function() {
 	});
 };
 
-DataStore.prototype.subscribe = function(key, callback) {
+DataStore.prototype.subscribe = function(callback, key = '') {
 	if (!this.changeListeners.find(listener => listener.key === key))
 		this.changeListeners.push({ key: key, callbacks: [] });
 	this.changeListeners.find(listener => listener.key === key).callbacks.push(callback);
+
+  return () => {
+    this.unsubscribe(key, callback);
+  }
 };
 
 DataStore.prototype.unsubscribe = function(key, remove) {
@@ -54,7 +58,7 @@ DataStore.prototype.unsubscribe = function(key, remove) {
 	}
 };
 
-DataStore.prototype.set = async function(key, value, store = 'store') {
+DataStore.prototype.set = function(key, value, store = 'store') {
 	this.data[key] = value;
 
 	let objectStore = this.db.transaction(store, 'readwrite').objectStore(store);
@@ -63,10 +67,11 @@ DataStore.prototype.set = async function(key, value, store = 'store') {
   let changeListener = this.changeListeners.find(listener => listener.key === key);
 	if (changeListener) {
 		changeListener.callbacks.forEach(callback => callback(value, key));
+    this.changeListeners.find(listener => listener.key === '').callbacks.forEach(callback => callback(value, key));
 	}
 };
 
-DataStore.prototype.get = async function(key) {
+DataStore.prototype.get = function(key) {
 	return this.data[key];
 };
 
