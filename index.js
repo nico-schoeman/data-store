@@ -67,8 +67,12 @@ DataStore.prototype.set = function(key, value, store = 'store') {
   let changeListener = this.changeListeners.find(listener => listener.key === key);
 	if (changeListener) {
 		changeListener.callbacks.forEach(callback => callback(value, key));
-    this.changeListeners.find(listener => listener.key === '').callbacks.forEach(callback => callback(value, key));
 	}
+
+  let keylessListener = this.changeListeners.find(listener => listener.key === '');
+  if (keylessListener) {
+    keylessListener.callbacks.forEach(callback => callback(value, key));
+  }
 };
 
 DataStore.prototype.get = function(key) {
