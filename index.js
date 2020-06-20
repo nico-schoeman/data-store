@@ -22,10 +22,6 @@ DataStore.prototype.init = function() {
 		window.store.db = event.target.result;
 		console.log('upgrade: ' + window.store.db);
 		let objectStore = window.store.db.createObjectStore('store');
-
-		// for (var i in employeeData) {
-		// 	objectStore.add(employeeData[i]);
-		// }
 	};
 
 	return new Promise((resolve, reject) => {
@@ -58,11 +54,13 @@ DataStore.prototype.unsubscribe = function(key, remove) {
 	}
 };
 
-DataStore.prototype.set = function(key, value, store = 'store') {
+DataStore.prototype.set = function(key, value, save = false, store = 'store') {
 	this.data[key] = value;
 
-	let objectStore = this.db.transaction(store, 'readwrite').objectStore(store);
-	objectStore.put(value, key);
+  if (save) {
+    let objectStore = this.db.transaction(store, 'readwrite').objectStore(store);
+    objectStore.put(value, key);
+  }
 
   let changeListener = this.changeListeners.find(listener => listener.key === key);
 	if (changeListener) {
