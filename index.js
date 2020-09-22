@@ -1,5 +1,4 @@
 export default function DataStore() {
-	window.store = this;
 	this.changeListeners = [];
 	this.data = {};
 
@@ -14,19 +13,19 @@ DataStore.prototype.init = function() {
 	};
 
 	request.onsuccess = function(event) {
-		window.store.db = request.result;
-		console.log('success: ' + window.store.db);
+		this.db = request.result;
+		console.log('success: ' + this.db);
 	};
 
 	request.onupgradeneeded = function(event) {
-		window.store.db = event.target.result;
-		console.log('upgrade: ' + window.store.db);
-		let objectStore = window.store.db.createObjectStore('store');
+		this.db = event.target.result;
+		console.log('upgrade: ' + this.db);
+		let objectStore = this.db.createObjectStore('store');
 	};
 
 	return new Promise((resolve, reject) => {
 		(function waitForDB() {
-			if (window.store.db) {
+			if (this.db) {
 				console.log('db ready');
 				return resolve();
 			}
@@ -90,10 +89,10 @@ DataStore.prototype.load = function(store = 'store') {
 	objectStore.openCursor().onsuccess = function(event) {
 		let cursor = event.target.result;
 		if (cursor) {
-			window.store.data[cursor.key] = cursor.value;
+			this.data[cursor.key] = cursor.value;
 			cursor.continue();
 		} else {
-			console.log('Got all data', window.store.data);
+			console.log('Got all data', this.data);
 		}
 	};
 };
